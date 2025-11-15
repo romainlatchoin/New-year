@@ -1,1 +1,234 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compte à Rebours</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
+        body {
+            background: #000;
+            color: #fff;
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+        }
+
+        #timer-screen, #content-screen {
+            display: none;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        #timer-screen.active, #content-screen.active {
+            display: flex;
+        }
+
+        #timer {
+            font-size: 3rem;
+            font-weight: bold;
+            text-align: center;
+            animation: pulse 2s infinite;
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .timer-unit {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .timer-value {
+            font-size: 3.5rem;
+        }
+
+        .timer-label-unit {
+            font-size: 0.9rem;
+            opacity: 0.6;
+            margin-top: 5px;
+        }
+
+        #content-screen {
+            flex-direction: column;
+        }
+
+        .content-display {
+            max-width: 800px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .content-display h2 {
+            margin-bottom: 30px;
+            font-size: 2rem;
+        }
+
+        .scrollable-text {
+            max-height: 60vh;
+            overflow-y: auto;
+            padding: 20px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .scrollable-text::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        .scrollable-text::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.1);
+            border-radius: 5px;
+        }
+
+        .scrollable-text::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.3);
+            border-radius: 5px;
+        }
+
+        .scrollable-text::-webkit-scrollbar-thumb:hover {
+            background: rgba(255,255,255,0.5);
+        }
+
+        .redirect-button {
+            display: inline-block;
+            padding: 20px 40px;
+            font-size: 1.3rem;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: #fff;
+            text-decoration: none;
+            border: none;
+            border-radius: 10px;
+            margin: 30px 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .redirect-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(245, 87, 108, 0.5);
+        }
+
+        .timer-label {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <!-- Écran du minuteur -->
+    <div id="timer-screen" class="active">
+        <div>
+            <div class="timer-label">Temps restant</div>
+            <div id="timer"></div>
+        </div>
+    </div>
+
+    <!-- Écran de contenu -->
+    <div id="content-screen">
+        <div class="content-display">
+            <h2>Jour 7</h2>
+            <div class="scrollable-text">
+                <p>Félicitations ! Vous êtes arrivé au jour 7...</p>
+                <p>Cette aventure touche à sa fin, mais une nouvelle commence !</p>
+                <p>Vous avez parcouru un long chemin, jour après jour, dévoilant chaque mystère.</p>
+                <p>Chaque étape vous a rapproché de ce moment final.</p>
+                <p>Maintenant, il est temps de découvrir ce qui vous attend.</p>
+                <p>Le voyage ne s'arrête pas ici, il ne fait que commencer.</p>
+                <p>Êtes-vous prêt à franchir la dernière porte ?</p>
+                <p>Tout ce que vous avez vécu jusqu'ici n'était qu'une préparation.</p>
+                <p>La vraie aventure vous attend de l'autre côté.</p>
+                <p>Faites défiler jusqu'au bout pour continuer...</p>
+            </div>
+            <a href="sampleFolder/index.html" class="redirect-button">Découvrir la suite →</a>
+        </div>
+    </div>
+
+    <script>
+        // Date de la révélation finale (31 décembre minuit)
+        // POUR TESTER : mettez une date proche
+        //const finalDate = new Date('2025-12-31T00:00:00+01:00');
+        // Pour tester immédiatement, décommentez la ligne suivante :
+        const finalDate = new Date('2025-11-15T00:00:00+01:00');
+
+        function isFinalDateReached() {
+            const now = new Date();
+            return now >= finalDate;
+        }
+
+        function getTimeUntilFinalDate() {
+            const now = new Date();
+            const diff = finalDate - now;
+            
+            if (diff <= 0) {
+                return { days: 0, hours: 0, minutes: 0, seconds: 0 };
+            }
+            
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+            
+            return { days, hours, minutes, seconds };
+        }
+
+        function formatTimerHTML(time) {
+            return `
+                <div class="timer-unit">
+                    <div class="timer-value">${String(time.days).padStart(2, '0')}</div>
+                    <div class="timer-label-unit">jours</div>
+                </div>
+                <div class="timer-unit">
+                    <div class="timer-value">${String(time.hours).padStart(2, '0')}</div>
+                    <div class="timer-label-unit">heures</div>
+                </div>
+                <div class="timer-unit">
+                    <div class="timer-value">${String(time.minutes).padStart(2, '0')}</div>
+                    <div class="timer-label-unit">minutes</div>
+                </div>
+                <div class="timer-unit">
+                    <div class="timer-value">${String(time.seconds).padStart(2, '0')}</div>
+                    <div class="timer-label-unit">secondes</div>
+                </div>
+            `;
+        }
+
+        function updateTimer() {
+            const time = getTimeUntilFinalDate();
+            document.getElementById('timer').innerHTML = formatTimerHTML(time);
+        }
+
+        function checkAndReveal() {
+            if (isFinalDateReached()) {
+                document.getElementById('timer-screen').classList.remove('active');
+                document.getElementById('content-screen').classList.add('active');
+            }
+        }
+
+        // Mise à jour du timer chaque seconde
+        setInterval(() => {
+            updateTimer();
+            checkAndReveal();
+        }, 1000);
+        
+        updateTimer();
+        checkAndReveal(); // Vérifier dès le chargement
+    </script>
+</body>
+</html>
